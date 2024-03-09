@@ -1,31 +1,30 @@
 import React, { useState } from 'react';
 import './App.css';
+import { useSelector, useDispatch } from 'react-redux';
+import { addTask, deleteTask, toggleTask } from './taskSlice';
 
 function App() {
-  const [tasks, setTasks] = useState([]);
+  const tasks = useSelector(state => state.task.tasks);
+  const dispatch = useDispatch();
   const [inputValue, setInputValue] = useState('');
 
-  const handleChange = (event) => {
+  const handleChange = event => {
     setInputValue(event.target.value);
   };
 
   const handleAddTask = () => {
     if (inputValue.trim() !== '') {
-      setTasks([...tasks, { id: Date.now(), text: inputValue, completed: false }]);
+      dispatch(addTask({ id: Date.now(), text: inputValue, completed: false }));
       setInputValue('');
     }
   };
 
-  const handleDeleteTask = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+  const handleDeleteTask = id => {
+    dispatch(deleteTask(id));
   };
 
-  const handleCheckTask = (id) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
+  const handleCheckTask = id => {
+    dispatch(toggleTask(id));
   };
 
   return (
@@ -42,7 +41,7 @@ function App() {
           <button onClick={handleAddTask}>Add</button>
         </div>
         <ul>
-          {tasks.map((task) => (
+          {tasks.map(task => (
             <li key={task.id} className={task.completed ? 'completed' : ''}>
               <span>{task.text}</span>
               <div>
